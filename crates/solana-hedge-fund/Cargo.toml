@@ -1,0 +1,18 @@
+[package]
+name = "solana-hedge-fund"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Solana-native paper-first hedge fund harness built on swarms-rs"
+
+[dependencies]
+# Upstream multi-agent framework (The-Swarm-Corporation/swarms-rs, Apache-2.0).
+# Local development can switch this to a path dependency on a sibling clone:
+#   swarms-rs = { path = "../../../swarms-rs-upstream/swarms-rs" }
+swarms-rs = "0.3.0"
+erased-serde = "0.4"
+futures = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls-native-roots"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
