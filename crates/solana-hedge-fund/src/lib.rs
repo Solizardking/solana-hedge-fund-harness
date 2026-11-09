@@ -11,10 +11,12 @@
 //! - The Grok (xAI) layer is advisory narrative only and ABSTAINS when
 //!   XAI_API_KEY is not configured. It never changes a score.
 
+pub mod api;
 pub mod data;
 pub mod llm;
 pub mod models;
 pub mod paper;
+pub mod perps;
 pub mod risk;
 pub mod signals;
 pub mod swarm;

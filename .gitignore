@@ -1,3 +1,5 @@
 /target
 .env
 *.log
+.perps-port
+run.log
