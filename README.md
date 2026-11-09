@@ -69,3 +69,18 @@ NOTICE                         upstream attribution
 
 - swarms-rs by The Swarm Corporation — https://github.com/The-Swarm-Corporation/swarms-rs
 - Design lineage: the Python `sol_fund` in https://github.com/Solizardking/ai-hedge-fund
+
+## Perps backend (paper)
+
+Branch `perps-backend` adds a Phoenix/Imperial read-only data path, a paper
+perps engine (margin, leverage, liq price, funding accrual), and an HTTP API:
+
+```bash
+export OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu OPENSSL_INCLUDE_DIR=/usr/include
+cargo build --release
+cargo run --release --bin hedge-fund-server   # http://0.0.0.0:18787
+# GET  /health /status /markets /positions
+# POST /run-cycle   — live Jupiter+Imperial snapshot → desk votes → paper fill
+```
+
+`LIVE_TRADING` is never enabled here. Venues still emit unsigned intents only.

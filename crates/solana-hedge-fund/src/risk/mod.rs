@@ -71,6 +71,39 @@ pub fn evaluate(intent: &OrderIntent, day_pnl_usd: f64, limits: &RiskLimits) -> 
     GateDecision::Allow
 }
 
+
+
+/// Extra perps checks: leverage already gated above; also refuse opens that
+/// leave less than `min_liq_distance_frac` to liquidation at the current mark.
+pub fn evaluate_perps(
+    intent: &OrderIntent,
+    mark: f64,
+    available_margin_usd: f64,
+    min_liq_distance_frac: f64,
+    limits: &RiskLimits,
+) -> GateDecision {
+    match evaluate(intent, 0.0, limits) {
+        GateDecision::Deny(r) => return GateDecision::Deny(r),
+        GateDecision::Allow => {}
+    }
+    let margin = intent.margin_usd();
+    if !intent.reduce_only && margin > available_margin_usd {
+        return GateDecision::Deny(format!(
+            "required margin {margin} exceeds available {available_margin_usd}"
+        ));
+    }
+    if mark > 0.0 && intent.leverage >= 1.0 && !intent.reduce_only {
+        let liq = crate::perps::liq_price(intent.side, mark, intent.leverage);
+        let dist = crate::perps::liq_distance_frac(intent.side, mark, liq);
+        if dist < min_liq_distance_frac {
+            return GateDecision::Deny(format!(
+                "liq distance {dist} < min {min_liq_distance_frac} (liq={liq})"
+            ));
+        }
+    }
+    GateDecision::Allow
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
